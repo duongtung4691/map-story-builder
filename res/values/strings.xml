@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">MapStoryBuilder</string>
+    <string name="photoOriginalsDirectoryName">photos_originals</string>
+	<string name="photosDirectoryName">photos</string>
+	<string name="storyConfigFilename">locations.csv</string>
+	<string name="chosenStoryName">StoryName</string>
+	<string name="newPhotoNoLocation">Unavailable; will save at (0, 0).</string>
+	<string name="extra_StorageDir">extStorageDir</string>
+	<string name="extra_MapPointRowData">extMapPointClickedRow</string>
+	<string name="rescaledPhotoFileSuffix">_m</string>
+	<string name="thumbnailFileSuffix">_t</string>
+	<string name="alert_closeButtonText">OK</string>
+	<string name="zipFileName">MapStory.zip</string>
+	<string name="indexHTMLFileName">index.html</string>
+	<string name="indexHTMLTemplateFileName">index_template.html</string>
+	<string name="defaultActivityTitle">Map Story Builder</string>
+	<string name="dropboxUserToken_key">DBUserKey</string>
+	<string name="dropboxUserToken_secret">DBUserSecret</string>
+	<style name="btn_darkgrey_style">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textColor">#ffffff</item>
+        <item name="android:gravity">center</item>
+        <item name="android:layout_margin">2dp</item>
+        <item name="android:textSize">16dp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:shadowColor">#000000</item>
+        <item name="android:shadowDx">1</item>
+        <item name="android:shadowDy">1</item>
+        <item name="android:shadowRadius">2</item>
+    </style>
+	<string name="photoOrientationWarning">Take photos in landscape (wide) mode for best results.</string>
+	<string-array name="basemapNamesArray">
+		<item >Streets</item>
+		<item >Topographic</item>
+		<item >Gray Canvas</item>
+		<item >Nat\'l Geographic</item>
+		<item >Imagery</item>
+	</string-array>
+	<string-array name="baseMapURLsArray">
+		<item >http://services.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer</item>
+		<item >http://services.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer</item>
+		<item >http://services.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer</item>
+		<item >http://services.arcgisonline.com/ArcGIS/rest/services/NatGeo_World_Map/MapServer</item>
+		<item >http://services.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer</item>
+	</string-array>
+	<string name="dropboxApp_key">zeatn59ggkxy05e</string>
+	<string name="dropboxApp_secret">febt7zf0i373ypd</string>
+	<string name="dropboxApp_baseDir">/Public</string>
+
+</resources>

@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="horizontal" 
+    android:baselineAligned="false">
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="3"
+        android:orientation="vertical" >
+
+        <TextView
+            android:id="@+id/lblTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Title:" />
+
+        <EditText
+            android:id="@+id/txtTitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="text" />
+
+        <TextView
+            android:id="@+id/lblDescription"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Description:" />
+
+        <EditText
+            android:id="@+id/txtDescription"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="8dip"
+            android:text="Map marker color:" />
+
+        <RadioGroup
+            android:id="@+id/rbgMarkerColor"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal" >
+
+            <RadioButton
+                android:id="@+id/rbMarkerColorRed"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:checked="true"
+                android:tag="R"
+                android:text="Red"
+                android:textColor="#FF9999" />
+
+            <RadioButton
+                android:id="@+id/rbMarkerColorBlue"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:tag="B"
+                android:text="Blue"
+                android:textColor="#9999FF" />
+        </RadioGroup>
+
+        <Button
+            android:id="@+id/btnSave"
+            style="@style/btn_darkgrey_style"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|right"
+            android:background="@drawable/btn_darkgrey"
+            android:drawableLeft="@android:drawable/ic_menu_save"
+            android:enabled="true"
+            android:text="Save" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="4"
+        android:orientation="vertical"
+        android:paddingLeft="10dp" >
+
+        <TextView
+            android:id="@+id/lblLoc"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Location:" />
+
+        <TextView
+            android:id="@+id/lblLocDetails"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/newPhotoNoLocation" />
+
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" >
+
+            <ImageView
+                android:id="@+id/imgPhoto"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentTop="true"
+                android:clickable="false"
+                android:contentDescription="Photo for this chapter of the story map"
+                android:scaleType="center" />
+            
+            <ImageButton
+                android:id="@+id/btnPhoto"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentTop="true"
+                android:layout_margin="5.0dip"
+                android:src="@android:drawable/ic_menu_camera" />
+
+            <Button
+                android:id="@+id/btnRotLeft"
+                style="?android:attr/buttonStyleSmall"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignTop="@+id/btnPhoto"
+                android:layout_toRightOf="@+id/btnPhoto"
+                android:text="&lt; 90°"
+                android:visibility="gone" />
+
+            <Button
+                android:id="@+id/btnRotNone"
+                style="?android:attr/buttonStyleSmall"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignBaseline="@+id/btnRotLeft"
+                android:layout_alignBottom="@+id/btnRotLeft"
+                android:layout_toRightOf="@+id/btnRotLeft"
+                android:text="0°"
+                android:visibility="gone" />
+
+            <Button
+                android:id="@+id/btnRotRight"
+                style="?android:attr/buttonStyleSmall"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignBaseline="@+id/btnRotLeft"
+                android:layout_alignBottom="@+id/btnRotLeft"
+                android:layout_toRightOf="@+id/btnRotNone"
+                android:text="90° >"
+                android:visibility="gone" />
+
+            <TextView
+                android:id="@+id/lblOrientationWarning"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_alignTop="@+id/btnPhoto"
+                android:layout_toRightOf="@+id/btnPhoto"
+                android:text="@string/photoOrientationWarning"
+                android:textAppearance="?android:attr/textAppearanceSmall" />
+        </RelativeLayout>
+    </LinearLayout>
+
+</LinearLayout>

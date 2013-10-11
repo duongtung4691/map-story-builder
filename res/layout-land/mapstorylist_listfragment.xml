@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_margin="8dp">
+
+    <ListView
+        android:id="@android:id/list"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/btnAddMapStory"
+        android:layout_alignParentTop="true"
+        android:background="@drawable/mapstorylist_background_darkgrey"
+        android:choiceMode="singleChoice"
+        android:divider="@drawable/mapstorylist_divider_gradient"
+        android:dividerHeight="1dp"
+        android:drawSelectorOnTop="false"
+        />
+
+    <TextView
+        android:id="@android:id/empty"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="There are no map stories yet. Add one?"
+        android:textSize="24.0sp" />
+
+    <Button
+        android:id="@+id/btnAddMapStory"
+        style="@style/btn_darkgrey_style"
+        android:layout_alignParentBottom="true"
+        android:background="@drawable/btn_darkgrey"
+        android:drawableLeft="@android:drawable/ic_menu_add"
+        android:text="Add Map" />
+
+</RelativeLayout>
