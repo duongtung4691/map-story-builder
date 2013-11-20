@@ -11,6 +11,7 @@ import org.apache.commons.io.FilenameUtils;
 import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Bitmap.CompressFormat;
 import android.graphics.drawable.BitmapDrawable;
 import android.location.Location;
@@ -24,6 +25,7 @@ import android.text.format.DateFormat;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -160,7 +162,9 @@ public class MapStoryPointEditor extends Activity {
 	private void setCurrentLocation(Location loc) {
 		this.m_currentGeoLocation = loc;
 		if (loc != null) {
-			String sLocInfo = String.format("X: %3.3f, Y: %2.3f", loc.getLongitude(), loc.getLatitude());
+			String sLocInfo = String.format(
+					getResources().getConfiguration().locale,
+					"X: %3.3f, Y: %2.3f", loc.getLongitude(), loc.getLatitude());
 			lblLocation.setText(sLocInfo);
 		}
 		else
@@ -253,8 +257,13 @@ public class MapStoryPointEditor extends Activity {
 	
 	private void setPreviewImage() {
 		recycleImageView();
-		BitmapDrawable bitmap = new BitmapDrawable(m_previewImageFile.getPath());
-		imgPhoto.setImageDrawable(bitmap);
+//		BitmapDrawable bitmap = new BitmapDrawable(m_previewImageFile.getPath());
+//		BitmapDrawable bitmap = new BitmapDrawable(getResources(), m_previewImageFile.getPath());
+		Bitmap bitmap = BitmapFactory.decodeFile(m_previewImageFile.getPath());
+		// Scale the display photo down to something that won't blow out the device's memory
+		Bitmap scaledBitmap = Bitmap.createScaledBitmap(bitmap, 512, 512, true);
+//		imgPhoto.setImageDrawable(bitmapScaled);
+		imgPhoto.setImageBitmap(scaledBitmap);
 	}
 	
 	/** We receive the camera's image here **/
@@ -275,7 +284,25 @@ public class MapStoryPointEditor extends Activity {
         }
 	}
 	
+	private void unbindDrawables(View view) {
+        if (view.getBackground() != null) {
+            try {
+                view.getBackground().setCallback(null);
+                ((BitmapDrawable) view.getBackground()).getBitmap().recycle();
+                view.destroyDrawingCache();
+                view.notifyAll();
+            } catch (Exception e) {
+            }
 
+        }
+        if (view instanceof ViewGroup) {
+            for (int i = 0; i < ((ViewGroup) view).getChildCount(); i++) {
+                unbindDrawables(((ViewGroup) view).getChildAt(i));
+            }
+            ((ViewGroup) view).removeAllViews();
+        }
+    }
+	
 	private String photoBasename(Date timeStamp) {
 		return "IMG_" + DateFormatForImageFilename(timeStamp);
 	}
@@ -434,11 +461,12 @@ public class MapStoryPointEditor extends Activity {
 	@Override
 	protected void onDestroy() {
 		super.onDestroy();
-		if (imgPhoto.getDrawable() instanceof BitmapDrawable) {	
+/*		if (imgPhoto.getDrawable() instanceof BitmapDrawable) {	
 			Bitmap bm = ((BitmapDrawable)imgPhoto.getDrawable()).getBitmap();
 			if (bm != null && !bm.isRecycled()) 
 				bm.recycle();
-		}
+		}*/
+		unbindDrawables(imgPhoto);
 	}
 
 	@Override
