@@ -39,5 +39,4 @@ public class MapStoryPointsList extends FragmentActivity implements IMapStoryPoi
 		setTitle(sTitle);
 	}
 
-
 }

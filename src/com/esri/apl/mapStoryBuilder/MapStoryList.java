@@ -5,10 +5,13 @@ import java.io.FileFilter;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Resources.NotFoundException;
 import android.os.Bundle;
+import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -24,6 +27,7 @@ import android.widget.Button;
 import android.widget.ListView;
 
 import com.esri.apl.mapStoryBuilder.interfaces.IMapStoryLister;
+import com.esri.apl.mapStoryBuilder.tasks.UploadMapStoryToDropboxSvc;
 import com.esri.apl.mapStoryBuilder.utils.FileUtils;
 import com.esri.apl.mapStoryBuilder.utils.UIUtils;
 
@@ -55,6 +59,13 @@ public class MapStoryList extends FragmentActivity implements IMapStoryLister {
 		if (bLytDetailsPresent && mapPointList != null)
         	fm.beginTransaction().remove(mapPointList).commit();        
         
+/*		// If this activity was invoked by a cancel notification command, show the dialog
+		Intent intent = getIntent();
+		boolean bOfferUploadCancelDialog = 
+			intent.getBooleanExtra(getString(R.string.extraKey_cancelUploadViaNotification), false);
+		if (bOfferUploadCancelDialog)
+			showUploadCancelConfirmationDialog(fm);*/
+		
         extStorageDir = getExternalFilesDir(null);
         if (extStorageDir == null) {
         	String sMessage = "Necessary external storage is currently unavailable.";
@@ -82,7 +93,7 @@ public class MapStoryList extends FragmentActivity implements IMapStoryLister {
 //        aryadptStories =
 //        		new MapStoryListAdapter(this, alstStories);
         aryadptStories = 
-        		new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1/*R.layout.mapstory_listitem_simple*/, alstStories);
+        		new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, alstStories);
         lfStories.setListAdapter(aryadptStories); 
         
         lfStories.getListView().setOnItemClickListener(onClickStory);
@@ -97,6 +108,88 @@ public class MapStoryList extends FragmentActivity implements IMapStoryLister {
         	lv.setItemChecked(i, false);
         }
     }
+
+	@Override
+	protected void onResume() {
+		super.onResume();
+		
+		// If this activity was invoked by a cancel notification command, show the dialog
+		Intent intent = getIntent();
+		boolean bOfferUploadCancelDialog = 
+			intent.getBooleanExtra(getString(R.string.extraKey_cancelUploadViaNotification), false);
+		if (bOfferUploadCancelDialog) {
+			FragmentManager fm = getSupportFragmentManager();
+			showUploadCancelConfirmationDialog(fm);
+		}
+	}
+
+	@Override
+	protected void onNewIntent(Intent intent) {
+		super.onNewIntent(intent);
+		setIntent(intent);
+		
+/*		// If this activity was invoked by a cancel notification command, show the dialog
+		boolean bOfferUploadCancelDialog = 
+			intent.getBooleanExtra(getString(R.string.extraKey_cancelUploadViaNotification), false);
+		if (bOfferUploadCancelDialog) {
+			FragmentManager fm = getSupportFragmentManager();
+			showUploadCancelConfirmationDialog(fm);
+		}*/
+	}
+
+	///// Upload-cancel confirmation dialog /////
+    void showUploadCancelConfirmationDialog(FragmentManager fm) {
+        DialogFragment newFragment = StopUploadConfirmationDF.newInstance(
+        		"Cancel the upload?");
+        newFragment.show(fm, "dialog");
+    }
+
+    /** The user does want to cancel the upload in progress **/
+    public void doPositiveClick() {
+		Intent intent = new Intent();
+		intent.setClass(this, UploadMapStoryToDropboxSvc.class);
+		intent.putExtra(getString(R.string.extraKey_cancelUploadViaNotification), true);
+		startService(intent);
+    }
+    
+/*    public void doNegativeClick() {
+    }*/
+    
+    public static class StopUploadConfirmationDF extends DialogFragment {
+
+        public static StopUploadConfirmationDF newInstance(String title) {
+            StopUploadConfirmationDF frag = new StopUploadConfirmationDF();
+            Bundle args = new Bundle();
+            args.putString("title", title);
+            frag.setArguments(args);
+            return frag;
+        }
+        
+        @Override
+        public Dialog onCreateDialog(Bundle savedInstanceState) {
+            String title = getArguments().getString("title");
+            return new AlertDialog.Builder(getActivity())
+                    .setIcon(android.R.drawable.ic_menu_upload)
+                    .setTitle(title)
+                    .setPositiveButton("Yes",
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int whichButton) {
+                                ((MapStoryList)getActivity()).doPositiveClick();
+                            }
+                        }
+                    )
+                    .setNegativeButton("No", null
+                        /*new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int whichButton) {
+                                ((MapStoryList)getActivity()).doNegativeClick();
+                            }
+                        }*/
+                    )
+                    .create();
+        }
+    }
+    
+    ///// End upload-cancel confirmation dialog /////
     
 /*	private class MapStoryListAdapter extends BaseAdapter implements ListAdapter {
 		private ArrayList<String> data;
@@ -154,7 +247,7 @@ public class MapStoryList extends FragmentActivity implements IMapStoryLister {
 		}
     }*/
 
-/*    private OnItemSelectedListener onSelectStory = new OnItemSelectedListener() {
+	/*    private OnItemSelectedListener onSelectStory = new OnItemSelectedListener() {
 
 		@Override
 		public void onItemSelected(AdapterView<?> parent, View view,

@@ -35,10 +35,10 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:inputType="text" />
-
-                    <requestFocus />
-
+                        android:inputType="textCapSentences">
+                    	<requestFocus />
+                   	</EditText>
+                    
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -51,7 +51,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:inputType="text" />
+                        android:inputType="textCapSentences"/>
                 </TableRow>
 
                 <TableRow
@@ -69,7 +69,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:inputType="text" >
+                        android:inputType="textCapSentences">
                     </EditText>
 
                     <TextView
@@ -84,7 +84,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:inputType="text" />
+                        android:inputType="textCapSentences"/>
                 </TableRow>
             </TableLayout>
 
@@ -154,17 +154,26 @@
 
                         <Button
                             android:id="@+id/btnUploadToDropbox"
+                            style="@style/btn_darkgrey_style"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
+                            android:background="@drawable/btn_darkgrey"
+                            android:drawableLeft="@android:drawable/ic_menu_upload"
                             android:text="Send to Dropbox"
+                            android:textSize="13sp"
                             android:visibility="visible" />
 
                         <Button
                             android:id="@+id/btnSendArchive"
+                            style="@style/btn_darkgrey_style"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
+                            android:background="@drawable/btn_darkgrey"
+                            android:drawableLeft="@android:drawable/ic_menu_send"
                             android:text="Send Zip"
+                            android:textSize="13sp"
                             android:visibility="visible" />
+
                     </LinearLayout>
                 </LinearLayout>
             </LinearLayout>

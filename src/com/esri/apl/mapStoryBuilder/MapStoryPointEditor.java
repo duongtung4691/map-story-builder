@@ -55,25 +55,31 @@ public class MapStoryPointEditor extends Activity {
 	public static final String COLOR_BLUE	= "B";
 	public static final String COLOR_RED	= "R";
 
+	private static final String PROVIDER_NULL = "Empty location";
+	private static final String PROVIDER_DATAFILE = "Saved values in data file";
+	private static final Location EMPTY_LOCATION = new Location(PROVIDER_NULL);
+	
 	// Location sensor
 	private LocationManager m_locMgr;
-	private Location m_currentGeoLocation; // Also saved in state
+	private Location m_currentDeviceLocation; // Also saved in state
 	
 	// State variables
 	private actionType m_action = actionType.NEWPOINT;
 	private File m_previewImageFile; // Hate this, but have to re/store it across orientation changes
 	private File m_newPhotoFile;
 	private Date m_newPhotoTimestamp;
-	private Location m_newPhotoGeoLocation;
+	private Location m_photoLocation;
 	private File m_capturedPhotoDir; // Where to put the original, full-size photos
 	private File m_webPhotoDir;		 // Where to put resized web and thumbnail image files
 	private String[] m_outputValues = new String[8];  // Values that'll be sent to the calling activity
 	
 	// Widgets
-	private TextView lblLocation;
+	private TextView lblCurrentLocation;
+	private TextView lblStoredLocation;
 	private EditText txtTitle;
 	private EditText txtDescription;
 	private ImageView imgPhoto;
+	private Button btnUpdateGeoLocation;
 	private Button btnSave;
 //	private Button btnRotLeft, btnRotNone, btnRotRight;
 	private ImageButton btnPhoto;
@@ -87,10 +93,12 @@ public class MapStoryPointEditor extends Activity {
 		setContentView(R.layout.newmapstorypoint_linear);
 		
 		// Get widget references
-		lblLocation = (TextView)findViewById(R.id.lblLocDetails);
+		lblCurrentLocation = (TextView)findViewById(R.id.lblLocDetails);
+		lblStoredLocation = (TextView)findViewById(R.id.lblStoredLocDetails);
 		imgPhoto = (ImageView)findViewById(R.id.imgPhoto);
 		txtTitle = (EditText)findViewById(R.id.txtTitle);
 		txtDescription = (EditText)findViewById(R.id.txtDescription);
+		btnUpdateGeoLocation = (Button)findViewById(R.id.btnUpdateGeoLocation);
 		btnSave = (Button)findViewById(R.id.btnSave);
 		btnPhoto = (ImageButton)findViewById(R.id.btnPhoto);
 /*		btnRotLeft = (Button)findViewById(R.id.btnRotLeft);
@@ -102,6 +110,7 @@ public class MapStoryPointEditor extends Activity {
 		
 		// Set event listeners
 		btnPhoto.setOnClickListener(onPhotoClick);
+		btnUpdateGeoLocation.setOnClickListener(onUpdatePhotoGeolocationClick);
 		btnSave.setOnClickListener(onSaveClick);
 /*		btnRotLeft.setOnClickListener(onRotLeftClick);
 		btnRotNone.setOnClickListener(onRotNoneClick);
@@ -132,7 +141,21 @@ public class MapStoryPointEditor extends Activity {
 		String sColor = m_outputValues[COL_COLOR];
 		rbRed.setChecked(sColor.equals(rbRed.getTag().toString()));
 		rbBlue.setChecked(sColor.equals(rbBlue.getTag().toString()));
-				
+		
+		String sLat = m_outputValues[COL_LAT];
+		String sLon = m_outputValues[COL_LON];
+		Location loc = EMPTY_LOCATION;
+		try {
+			double dLat = Double.parseDouble(sLat);
+			double dLon = Double.parseDouble(sLon);
+			loc = new Location(PROVIDER_DATAFILE);
+			loc.setLatitude(dLat); loc.setLongitude(dLon);
+		}
+		catch (NumberFormatException exc) {
+			Log.i(TAG, "Invalid coordinates stored in data file. Initializing with empty/null location (0,0).");
+		}
+		setPhotoLocation(loc);
+		
 		String sWebPhotoFile = FilenameUtils.getName(m_outputValues[COL_PHOTOURL]);
 		int nSuffixPos = sWebPhotoFile.lastIndexOf(getString(R.string.rescaledPhotoFileSuffix));
 		String sExt = FilenameUtils.getExtension(sWebPhotoFile);
@@ -159,18 +182,35 @@ public class MapStoryPointEditor extends Activity {
 		super.onPause();
 	}
 	
-	private void setCurrentLocation(Location loc) {
-		this.m_currentGeoLocation = loc;
-		if (loc != null) {
-			String sLocInfo = String.format(
-					getResources().getConfiguration().locale,
-					"X: %3.3f, Y: %2.3f", loc.getLongitude(), loc.getLatitude());
-			lblLocation.setText(sLocInfo);
-		}
-		else
-			lblLocation.setText(getString(R.string.newPhotoNoLocation));
+	private void setCurrentDeviceLocation(Location loc) {
+		this.m_currentDeviceLocation = loc;
+		String sLocInfo = locationText(loc);
+		lblCurrentLocation.setText(sLocInfo);
 	}
 	
+	private void setPhotoLocationFromDeviceLocation() {
+	    m_photoLocation = 
+	    		(m_currentDeviceLocation == null)	? EMPTY_LOCATION 
+	    											: new Location(m_currentDeviceLocation);
+	    lblStoredLocation.setText(locationText(m_photoLocation));
+	}
+	
+	private void setPhotoLocation(Location loc) {
+	    m_photoLocation = 
+	    		(loc == null)	? EMPTY_LOCATION 
+	    						: new Location(loc);
+	    lblStoredLocation.setText(locationText(m_photoLocation));
+	}
+
+	private String locationText(Location loc) {
+		String sLoc;
+		if (loc == EMPTY_LOCATION || loc == null)
+			sLoc = getString(R.string.newPhotoNoLocation);
+		else 
+			sLoc = String.format("X: %3.3f, Y: %2.3f", loc.getLongitude(), loc.getLatitude());
+		return sLoc;
+	}
+
 	LocationListener locationListener = new LocationListener() {
 		
 		@Override
@@ -191,9 +231,11 @@ public class MapStoryPointEditor extends Activity {
 		public void onLocationChanged(Location location) {
 			// TODO User could move but still not have greater accuracy than the last reading.
 			// Still need to update location in that case.
-			if ( (m_currentGeoLocation == null) || (m_currentGeoLocation.getAccuracy() == 0f) ||
-				 (location.getAccuracy() < m_currentGeoLocation.getAccuracy()) ) {
-				setCurrentLocation(location);
+			if ( (m_currentDeviceLocation == null) || (m_currentDeviceLocation.getAccuracy() == 0f) ||
+				 (location.getAccuracy() < m_currentDeviceLocation.getAccuracy()) ) {
+				setCurrentDeviceLocation(location);
+				if (btnUpdateGeoLocation.getVisibility() != View.VISIBLE)
+					btnUpdateGeoLocation.setVisibility(View.VISIBLE);
 			}
 		}
 	};
@@ -204,8 +246,8 @@ public class MapStoryPointEditor extends Activity {
 	 * @return Date object for the last location fix or for the current clock
 	 */
 	private Date getTimestamp() {
-		if (m_currentGeoLocation != null)
-			return new Date(m_currentGeoLocation.getTime());
+		if (m_currentDeviceLocation != null)
+			return new Date(m_currentDeviceLocation.getTime());
 		else
 			return new Date();
 	}
@@ -225,8 +267,7 @@ public class MapStoryPointEditor extends Activity {
 		@Override
 		public void onClick(View v) {
 		    m_newPhotoTimestamp = getTimestamp();
-		    m_newPhotoGeoLocation = 
-		    		(m_currentGeoLocation == null) ? null : new Location(m_currentGeoLocation);
+		    setPhotoLocationFromDeviceLocation();
 		    m_newPhotoFile = photoFile(m_newPhotoTimestamp);
 		    Uri newPhotoFilePath = Uri.fromFile(m_newPhotoFile);
 		    
@@ -313,6 +354,14 @@ public class MapStoryPointEditor extends Activity {
 		return photoFile;
 	}
 	
+	/** Updates the current photo geolocation **/
+	private OnClickListener onUpdatePhotoGeolocationClick = new OnClickListener() {
+		@Override
+		public void onClick(View v) {
+			setPhotoLocationFromDeviceLocation();
+		}
+	};
+	
 	/** Saves the current story event and closes **/
 	private OnClickListener onSaveClick = new OnClickListener() {
 		String outputWebImagePath = "", outputThumbnailPath = "";
@@ -320,6 +369,7 @@ public class MapStoryPointEditor extends Activity {
 		@Override
 		public void onClick(View v) {
 			boolean newPhotoCaptured = (m_newPhotoFile != null);
+//			boolean newPhotoGeoLocationCaptured = (m_photoLocation != null);			
 			boolean oldImagesExist = 
 					m_outputValues[COL_PHOTOURL] != null || 
 					m_outputValues[COL_THUMBURL] != null;
@@ -337,7 +387,7 @@ public class MapStoryPointEditor extends Activity {
 				
 				saveNewPhotoValues();
 			}
-			
+			savePhotoGeoLocation();
 			
 			// Return the results
 			Intent results = new Intent();
@@ -361,13 +411,19 @@ public class MapStoryPointEditor extends Activity {
 		}
 		
 		private void saveNewPhotoValues() {
-			m_outputValues[COL_LON] =
-				(m_newPhotoGeoLocation == null) ? "0.0" : Double.toString(m_newPhotoGeoLocation.getLongitude());
-			m_outputValues[COL_LAT] = 
-				(m_newPhotoGeoLocation == null) ? "0.0" : Double.toString(m_newPhotoGeoLocation.getLatitude());
 			m_outputValues[COL_PHOTOURL] = outputWebImagePath;
 			m_outputValues[COL_THUMBURL] = outputThumbnailPath;
 			m_outputValues[COL_DATETIME] = (String) DateFormat.format("yyyy-M-d kk:mm", m_newPhotoTimestamp);
+			savePhotoGeoLocation();
+		}
+		
+		private void savePhotoGeoLocation() {
+			m_outputValues[COL_LON] =
+				(m_photoLocation == EMPTY_LOCATION) ? "" : Double.toString(m_photoLocation.getLongitude());
+//				(m_newPhotoGeoLocation == null) ? "0.0" : Double.toString(m_newPhotoGeoLocation.getLongitude());
+			m_outputValues[COL_LAT] = 
+				(m_photoLocation == EMPTY_LOCATION) ? "" : Double.toString(m_photoLocation.getLatitude());
+//				(m_newPhotoGeoLocation == null) ? "0.0" : Double.toString(m_newPhotoGeoLocation.getLatitude());
 		}
 		
 /*		private void saveOldPhotoValues() {
@@ -443,22 +499,6 @@ public class MapStoryPointEditor extends Activity {
 	};
 
 	@Override
-	protected void onSaveInstanceState(Bundle outState) {
-		super.onSaveInstanceState(outState);
-
-		outState.putSerializable("action", m_action);
-		outState.putSerializable("capturedPhotoTimeStamp", m_newPhotoTimestamp);
-		outState.putParcelable("capturedPhotoLocation", m_newPhotoGeoLocation);
-		outState.putSerializable("capturedPhotoFile", m_newPhotoFile);
-		outState.putSerializable("capturedPhotoDir", m_capturedPhotoDir);
-		outState.putSerializable("webPhotoDir", m_webPhotoDir);
-		outState.putParcelable("currentLocation", m_currentGeoLocation);
-		outState.putStringArray("outputValues", m_outputValues);
-		outState.putSerializable("previewImageFile", m_previewImageFile);
-		outState.putString("activityTitle", getTitle().toString());
-	}
-
-	@Override
 	protected void onDestroy() {
 		super.onDestroy();
 /*		if (imgPhoto.getDrawable() instanceof BitmapDrawable) {	
@@ -470,20 +510,38 @@ public class MapStoryPointEditor extends Activity {
 	}
 
 	@Override
+	protected void onSaveInstanceState(Bundle outState) {
+		super.onSaveInstanceState(outState);
+
+		outState.putSerializable("action", m_action);
+		outState.putSerializable("capturedPhotoTimeStamp", m_newPhotoTimestamp);
+		outState.putParcelable("capturedPhotoLocation", m_photoLocation);
+		outState.putSerializable("capturedPhotoFile", m_newPhotoFile);
+		outState.putSerializable("capturedPhotoDir", m_capturedPhotoDir);
+		outState.putSerializable("webPhotoDir", m_webPhotoDir);
+		outState.putParcelable("currentLocation", m_currentDeviceLocation);
+		outState.putStringArray("outputValues", m_outputValues);
+		outState.putSerializable("previewImageFile", m_previewImageFile);
+		outState.putString("activityTitle", getTitle().toString());
+		outState.putInt("btnUpdateLocVisibility", btnUpdateGeoLocation.getVisibility());
+	}
+
+	@Override
 	protected void onRestoreInstanceState(Bundle savedInstanceState) {
 		super.onRestoreInstanceState(savedInstanceState);
 		
 		// Some sort of config change happened, e.g. orientation change
 		m_action = (actionType)savedInstanceState.getSerializable("action");
 		m_newPhotoTimestamp = (Date)savedInstanceState.getSerializable("capturedPhotoTimeStamp");
-		m_newPhotoGeoLocation = (Location)savedInstanceState.getParcelable("capturedPhotoLocation");
+		setPhotoLocation((Location)savedInstanceState.getParcelable("capturedPhotoLocation"));
 		m_newPhotoFile = (File)savedInstanceState.getSerializable("capturedPhotoFile");
 		m_capturedPhotoDir = (File)savedInstanceState.getSerializable("capturedPhotoDir");
 		m_webPhotoDir = (File)savedInstanceState.getSerializable("webPhotoDir");
-		setCurrentLocation((Location)savedInstanceState.getParcelable("currentLocation"));
+		setCurrentDeviceLocation((Location)savedInstanceState.getParcelable("currentLocation"));
 		m_outputValues = savedInstanceState.getStringArray("outputValues");
 		m_previewImageFile = (File)savedInstanceState.getSerializable("previewImageFile");
 		setTitle(savedInstanceState.getString("activityTitle"));
+		btnUpdateGeoLocation.setVisibility(savedInstanceState.getInt("btnUpdateLocVisibility"));
 		
 		if (m_previewImageFile != null) setPreviewImage();
 	}

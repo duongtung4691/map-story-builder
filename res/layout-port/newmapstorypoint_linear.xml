@@ -14,7 +14,9 @@
         android:id="@+id/txtTitle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:inputType="text" />
+        android:inputType="textCapSentences">
+        <requestFocus />
+    </EditText>
 
     <TextView
         android:id="@+id/lblDescription"
@@ -25,7 +27,8 @@
     <EditText
         android:id="@+id/txtDescription"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:inputType="textCapSentences" />
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -65,25 +68,50 @@
     </LinearLayout>
 
     <LinearLayout
-        android:id="@+id/lytLoc"
-        android:layout_width="wrap_content"
+        android:orientation="vertical"
         android:layout_height="wrap_content"
-        android:orientation="horizontal" >
-
-        <TextView
-            android:id="@+id/lblLoc"
+        android:layout_width="wrap_content">
+        
+        <LinearLayout
+            android:id="@+id/lytLoc"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginRight="8dip"
-            android:text="Location:" />
+            android:orientation="horizontal" >
 
-        <TextView
-            android:id="@+id/lblLocDetails"
+            <TextView
+                android:id="@+id/lblLoc"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="8dip"
+                android:text="Current Location:" />
+
+            <TextView
+                android:id="@+id/lblLocDetails"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/newPhotoNoLocation" />
+        </LinearLayout>
+        <LinearLayout
+            android:id="@+id/lytStoredLoc"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/newPhotoNoLocation" />
-    </LinearLayout>
+            android:orientation="horizontal" >
 
+            <TextView
+                android:id="@+id/lblStoredLoc"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="8dip"
+                android:text="Stored Location:" />
+
+            <TextView
+                android:id="@+id/lblStoredLocDetails"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/newPhotoNoLocation" />
+        </LinearLayout>
+</LinearLayout>
+    
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -139,6 +167,20 @@
             android:visibility="gone" />
 
         <Button
+            android:id="@+id/btnUpdateGeoLocation"
+            style="@style/btn_darkgrey_style"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_toLeftOf="@id/btnSave"
+            android:background="@drawable/btn_darkgrey"
+            android:drawableLeft="@android:drawable/ic_menu_mylocation"
+            android:enabled="true"
+            android:textSize="13dip"
+            android:visibility="invisible"
+            android:text="Update Location" />
+            
+        <Button
             android:id="@+id/btnSave"
             style="@style/btn_darkgrey_style"
             android:layout_width="wrap_content"
@@ -147,6 +189,7 @@
             android:layout_alignParentRight="true"
             android:background="@drawable/btn_darkgrey"
             android:drawableLeft="@android:drawable/ic_menu_save"
+            android:textSize="13dip"
             android:enabled="true"
             android:text="Save" />
 

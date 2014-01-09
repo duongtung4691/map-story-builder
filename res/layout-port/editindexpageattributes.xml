@@ -34,9 +34,11 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:inputType="text" />
+                        android:inputType="textCapSentences">
 
-                    <requestFocus />
+                  		<requestFocus />
+
+                    </EditText>
                 </TableRow>
 
                 <TableRow
@@ -54,7 +56,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:inputType="text" >
+                        android:inputType="textCapSentences">
                     </EditText>
                 </TableRow>
 
@@ -73,7 +75,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:inputType="text" />
+                        android:inputType="textCapSentences"/>
                 </TableRow>
 
                 <TableRow
@@ -91,7 +93,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:inputType="text" />
+                        android:inputType="textCapSentences"/>
                 </TableRow>
             </TableLayout>
 
@@ -100,6 +102,7 @@
                 android:layout_height="wrap_content"
                 android:text="Choose a photo for the intro page:"
                 android:textAppearance="?android:attr/textAppearanceMedium" />
+            
             <pl.polidea.coverflow.CoverFlow
                 xmlns:coverflow="http://schemas.android.com/apk/res/com.esri.apl.mapStoryBuilder"
                 android:id="@+id/cfPhotoGallery"
@@ -141,17 +144,24 @@
 
                 <Button
                     android:id="@+id/btnUploadToDropbox"
+                    style="@style/btn_darkgrey_style"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:background="@drawable/btn_darkgrey"
                     android:drawableLeft="@android:drawable/ic_menu_upload"
-                    android:text="Dropbox" />
+                    android:text="Dropbox"
+                    android:textSize="13sp" />
 
                 <Button
                     android:id="@+id/btnSendArchive"
+                    style="@style/btn_darkgrey_style"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:drawableLeft="@drawable/ic_menu_attachment"
-                    android:text="Send Archive" />
+                    android:background="@drawable/btn_darkgrey"
+                    android:drawableLeft="@android:drawable/ic_menu_send"
+                    android:text="Send Zip"
+                    android:textSize="13sp" />
+
             </LinearLayout>
         </LinearLayout>
     </ScrollView>

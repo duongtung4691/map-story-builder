@@ -1,13 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">MapStoryBuilder</string>
+    <string name="app_name">MapStory Builder</string>
     <string name="photoOriginalsDirectoryName">photos_originals</string>
 	<string name="photosDirectoryName">photos</string>
 	<string name="storyConfigFilename">locations.csv</string>
 	<string name="chosenStoryName">StoryName</string>
-	<string name="newPhotoNoLocation">Unavailable; will save at (0, 0).</string>
+	<string name="newPhotoNoLocation">Unavailable (0, 0).</string>
 	<string name="extra_StorageDir">extStorageDir</string>
 	<string name="extra_MapPointRowData">extMapPointClickedRow</string>
+	<string name="extraKey_cancelUploadViaNotification">extKey_cancelUploadViaNotification</string>
 	<string name="rescaledPhotoFileSuffix">_m</string>
 	<string name="thumbnailFileSuffix">_t</string>
 	<string name="alert_closeButtonText">OK</string>
@@ -23,7 +24,7 @@
         <item name="android:textColor">#ffffff</item>
         <item name="android:gravity">center</item>
         <item name="android:layout_margin">2dp</item>
-        <item name="android:textSize">16dp</item>
+        <item name="android:textSize">16sp</item>
         <item name="android:textStyle">bold</item>
         <item name="android:shadowColor">#000000</item>
         <item name="android:shadowDx">1</item>

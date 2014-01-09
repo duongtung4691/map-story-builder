@@ -66,6 +66,7 @@
             android:background="@drawable/btn_darkgrey"
             android:drawableLeft="@android:drawable/ic_menu_share"
             android:text="Share"
+            android:textSize="13sp"
             android:visibility="visible" />
     </LinearLayout>
 
